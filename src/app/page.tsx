@@ -1,103 +1,187 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import React, { useState, useEffect } from "react";
+import LanguageSelector from "../components/LanguageSelector";
+import { translateText } from "../utils/translateApi";
+
+const languages = [
+  { code: "en", name: "English" },
+  { code: "hi", name: "Hindi" },
+  { code: "es", name: "Spanish" },
+  { code: "fr", name: "French" },
+  { code: "de", name: "German" },
+];
+
+export default function HomePage() {
+  const [sourceLang, setSourceLang] = useState("en");
+  const [targetLang, setTargetLang] = useState("hi");
+  const [text, setText] = useState("");
+  const [translatedText, setTranslatedText] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [copied, setCopied] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    const savedMode = localStorage.getItem("darkMode");
+    if (savedMode === "true") {
+      setDarkMode(true);
+      document.documentElement.classList.add("dark");
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    if (darkMode) {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("darkMode", "false");
+      setDarkMode(false);
+    } else {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("darkMode", "true");
+      setDarkMode(true);
+    }
+  };
+
+  const handleSwapLanguages = () => {
+    setSourceLang(targetLang);
+    setTargetLang(sourceLang);
+    setTranslatedText("");
+    setCopied(false);
+  };
+
+  const handleTranslate = async () => {
+    if (!text.trim()) {
+      setError("Please enter text to translate.");
+      setTranslatedText("");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    setTranslatedText("");
+    setCopied(false);
+
+    try {
+      const result = await translateText(text, sourceLang, targetLang);
+      if (result.startsWith("Translation error")) {
+        setError(result);
+      } else {
+        setTranslatedText(result);
+      }
+    } catch {
+      setError("An unexpected error occurred.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const copyToClipboard = () => {
+    if (!translatedText.trim()) return;
+    navigator.clipboard.writeText(translatedText).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  // Text to speech function
+  const speakText = (textToSpeak: string, lang: string) => {
+    if (!window.speechSynthesis) {
+      alert("Speech Synthesis not supported in your browser.");
+      return;
+    }
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+    utterance.lang = lang;
+    window.speechSynthesis.cancel(); // Stop any current speaking
+    window.speechSynthesis.speak(utterance);
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <main className="p-6 max-w-3xl mx-auto min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Voiceless Boundaries</h1>
+        <button
+          onClick={toggleDarkMode}
+          className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+        >
+          {darkMode ? "Light Mode" : "Dark Mode"}
+        </button>
+      </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      <div className="flex items-center gap-4 mb-4">
+        <LanguageSelector
+          selected={sourceLang}
+          onChange={setSourceLang}
+          languages={languages}
+          darkMode={darkMode}
+        />
+        <button
+          onClick={handleSwapLanguages}
+          aria-label="Swap languages"
+          title="Swap languages"
+          className="p-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition"
+        >
+          ⇄
+        </button>
+        <LanguageSelector
+          selected={targetLang}
+          onChange={setTargetLang}
+          languages={languages}
+          darkMode={darkMode}
+        />
+      </div>
+
+      <textarea
+        className="w-full border rounded p-3 mb-2 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors"
+        rows={5}
+        placeholder="Enter text here..."
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
+
+      {/* Speak original text button */}
+      <button
+        onClick={() => speakText(text, sourceLang)}
+        disabled={!text.trim()}
+        className="mb-4 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition"
+      >
+        🔊 Speak Original
+      </button>
+
+      <button
+        onClick={handleTranslate}
+        disabled={loading}
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+      >
+        {loading ? "Translating..." : "Translate"}
+      </button>
+
+      {error && (
+        <div className="mt-4 p-3 bg-red-200 text-red-800 rounded">{error}</div>
+      )}
+
+      {translatedText && (
+        <div className="mt-6 p-4 border rounded bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors">
+          <h2 className="font-semibold mb-2">Translation</h2>
+          <p className="whitespace-pre-wrap">{translatedText}</p>
+
+          <div className="flex gap-3 mt-4">
+            <button
+              onClick={copyToClipboard}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+            >
+              {copied ? "Copied!" : "Copy to Clipboard"}
+            </button>
+
+            {/* Speak translated text button */}
+            <button
+              onClick={() => speakText(translatedText, targetLang)}
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+            >
+              🔊 Speak Translation
+            </button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      )}
+    </main>
   );
 }
