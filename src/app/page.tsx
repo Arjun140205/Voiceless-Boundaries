@@ -3,6 +3,9 @@
 import React, { useState, useEffect } from "react";
 import LanguageSelector from "../components/LanguageSelector";
 import { translateText } from "../utils/translateApi";
+import { detectLanguage } from "../utils/languageDetect";
+import LiveTranslation from "../components/LiveTranslation";
+import { generatePDF } from "../utils/pdfGenerator"; // ⬅️ NEW
 
 const languages = [
   { code: "en", name: "English" },
@@ -18,6 +21,7 @@ export default function HomePage() {
   const [text, setText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [detecting, setDetecting] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
@@ -30,16 +34,23 @@ export default function HomePage() {
     }
   }, []);
 
+  useEffect(() => {
+    const detect = async () => {
+      if (text.trim().length < 3) return;
+      setDetecting(true);
+      const detected = await detectLanguage(text);
+      if (detected && detected !== sourceLang) {
+        setSourceLang(detected);
+      }
+      setDetecting(false);
+    };
+    detect();
+  }, [text]);
+
   const toggleDarkMode = () => {
-    if (darkMode) {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("darkMode", "false");
-      setDarkMode(false);
-    } else {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("darkMode", "true");
-      setDarkMode(true);
-    }
+    document.documentElement.classList.toggle("dark");
+    localStorage.setItem("darkMode", (!darkMode).toString());
+    setDarkMode(!darkMode);
   };
 
   const handleSwapLanguages = () => {
@@ -47,32 +58,6 @@ export default function HomePage() {
     setTargetLang(sourceLang);
     setTranslatedText("");
     setCopied(false);
-  };
-
-  const handleTranslate = async () => {
-    if (!text.trim()) {
-      setError("Please enter text to translate.");
-      setTranslatedText("");
-      return;
-    }
-
-    setLoading(true);
-    setError("");
-    setTranslatedText("");
-    setCopied(false);
-
-    try {
-      const result = await translateText(text, sourceLang, targetLang);
-      if (result.startsWith("Translation error")) {
-        setError(result);
-      } else {
-        setTranslatedText(result);
-      }
-    } catch {
-      setError("An unexpected error occurred.");
-    } finally {
-      setLoading(false);
-    }
   };
 
   const copyToClipboard = () => {
@@ -83,22 +68,29 @@ export default function HomePage() {
     });
   };
 
-  // Text to speech function
   const speakText = (textToSpeak: string, lang: string) => {
     if (!window.speechSynthesis) {
       alert("Speech Synthesis not supported in your browser.");
       return;
     }
+
+    const voices = window.speechSynthesis.getVoices();
+    const matchingVoice = voices.find((voice) => voice.lang.startsWith(lang));
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
     utterance.lang = lang;
-    window.speechSynthesis.cancel(); // Stop any current speaking
+
+    if (matchingVoice) {
+      utterance.voice = matchingVoice;
+    }
+
+    window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utterance);
   };
 
   return (
     <main className="p-6 max-w-3xl mx-auto min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Voiceless Boundaries</h1>
+        <h1 className="text-4xl font-bold">Voiceless Boundaries</h1>
         <button
           onClick={toggleDarkMode}
           className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
@@ -138,21 +130,23 @@ export default function HomePage() {
         onChange={(e) => setText(e.target.value)}
       />
 
-      {/* Speak original text button */}
+      {detecting && (
+        <div className="text-sm text-gray-500 mb-2">Detecting language...</div>
+      )}
+
+      <LiveTranslation
+        text={text}
+        sourceLang={sourceLang}
+        targetLang={targetLang}
+        onTranslate={setTranslatedText}
+      />
+
       <button
         onClick={() => speakText(text, sourceLang)}
         disabled={!text.trim()}
         className="mb-4 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition"
       >
-        🔊 Speak Original
-      </button>
-
-      <button
-        onClick={handleTranslate}
-        disabled={loading}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-      >
-        {loading ? "Translating..." : "Translate"}
+         Speak Original
       </button>
 
       {error && (
@@ -164,7 +158,7 @@ export default function HomePage() {
           <h2 className="font-semibold mb-2">Translation</h2>
           <p className="whitespace-pre-wrap">{translatedText}</p>
 
-          <div className="flex gap-3 mt-4">
+          <div className="flex flex-wrap gap-3 mt-4">
             <button
               onClick={copyToClipboard}
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
@@ -172,12 +166,18 @@ export default function HomePage() {
               {copied ? "Copied!" : "Copy to Clipboard"}
             </button>
 
-            {/* Speak translated text button */}
             <button
               onClick={() => speakText(translatedText, targetLang)}
               className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
             >
-              🔊 Speak Translation
+               Speak Translation
+            </button>
+
+            <button
+              onClick={() => generatePDF(text, translatedText)}
+              className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition"
+            >
+              Download PDF
             </button>
           </div>
         </div>
