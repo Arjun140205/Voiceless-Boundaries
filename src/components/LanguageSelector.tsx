@@ -2,32 +2,34 @@
 
 import React from "react";
 
-type Props = {
+type LanguageSelectorProps = {
   selected: string;
-  onChange: (value: string) => void;
+  onChange: (lang: string) => void;
   languages: { code: string; name: string }[];
-  darkMode?: boolean; // add this line
+  darkMode?: boolean;
 };
 
-export default function LanguageSelector({
+const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   selected,
   onChange,
   languages,
   darkMode = false,
-}: Props) {
+}) => {
   return (
     <select
       value={selected}
       onChange={(e) => onChange(e.target.value)}
-      className={`border rounded p-2 ${
-        darkMode ? "bg-gray-800 text-gray-100" : "bg-white text-gray-900"
-      }`}
+      className={`px-3 py-2 rounded border text-sm transition-colors
+        ${darkMode ? "bg-gray-800 text-white border-gray-600" : "bg-white text-black border-gray-300"}
+      `}
     >
-      {languages.map(({ code, name }) => (
-        <option key={code} value={code}>
-          {name}
+      {languages.map((lang) => (
+        <option key={lang.code} value={lang.code}>
+          {lang.name}
         </option>
       ))}
     </select>
   );
-}
+};
+
+export default LanguageSelector;
