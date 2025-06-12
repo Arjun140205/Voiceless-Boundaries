@@ -28,3 +28,55 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Star animation */
+.star {
+  @apply absolute w-0.5 h-0.5 bg-white/50 rounded-full;
+  animation: twinkle 5s infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.5); }
+}
+
+/* Orbit animations */
+@keyframes orbit {
+  0% { transform: rotate(0deg) translateX(100px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(100px) rotate(-360deg); }
+}
+
+@keyframes orbitReverse {
+  0% { transform: rotate(360deg) translateX(100px) rotate(-360deg); }
+  100% { transform: rotate(0deg) translateX(100px) rotate(0deg); }
+}
+
+.animate-orbit {
+  animation: orbit 20s linear infinite;
+}
+
+.animate-orbit-reverse {
+  animation: orbitReverse 25s linear infinite;
+}
+
+/* Glass effect */
+.glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20;
+}
+
+.glass-dark {
+  @apply bg-gray-900/30 backdrop-blur-md border border-gray-700/30;
+}
+
+/* Input and button enhancements */
+.enhanced-input {
+  @apply transition-all duration-300 ease-in-out;
+  @apply focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50;
+  @apply hover:border-blue-400/30;
+}
+
+.enhanced-button {
+  @apply transition-all duration-300 ease-in-out;
+  @apply hover:scale-105 active:scale-95;
+  @apply hover:shadow-lg hover:shadow-blue-500/20;
+}
+
