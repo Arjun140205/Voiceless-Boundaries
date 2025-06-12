@@ -97,28 +97,57 @@ export default function FileUploader({ onTextExtracted, darkMode }: Props) {
 
   return (
     <div 
-      className={`mb-4 relative ${isDragging ? 'ring-2 ring-blue-500' : ''}`}
+      className={`mb-4 relative rounded-2xl overflow-hidden ${
+        isDragging ? 'ring-2 ring-[var(--raspberry-rose)]' : ''
+      }`}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
     >
       <div className={`
-        rounded-xl p-6 border-2 border-dashed transition-all duration-300
-        ${darkMode ? 'border-gray-600' : 'border-gray-300'}
-        ${isDragging ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/10' : ''}
+        ${darkMode ? 'glass-morphism-dark' : 'glass-morphism'}
+        rounded-xl p-8 transition-all duration-300
+        ${isDragging 
+          ? 'border-[var(--raspberry-rose)] bg-[var(--raspberry-rose)]/5' 
+          : darkMode 
+            ? 'border-[var(--muted-mauve)]/20' 
+            : 'border-[var(--dusty-rose)]/20'
+        }
       `}>
-        <label className={`block text-center ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-          <div className="space-y-2">
+        <label className={`block text-center ${
+          darkMode ? 'text-[var(--pastel-pink)]' : 'text-[var(--soft-burgundy)]'
+        }`}>
+          <div className="space-y-4">
             <div className="flex items-center justify-center">
-              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              <svg 
+                className={`w-12 h-12 ${
+                  darkMode ? 'text-[var(--muted-mauve)]' : 'text-[var(--dusty-rose)]'
+                }`} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth="1.5" 
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" 
+                />
               </svg>
             </div>
-            <div className="text-sm">
+            <div className="text-base font-medium">
               Drag & drop files here or{' '}
-              <span className="text-blue-500 hover:text-blue-600 cursor-pointer">browse</span>
+              <span className={`
+                ${darkMode ? 'glass-button-dark' : 'glass-button'}
+                inline-block px-3 py-1 rounded-full cursor-pointer
+                text-[var(--raspberry-rose)] hover:text-[var(--soft-burgundy)]
+              `}>
+                browse
+              </span>
             </div>
-            <div className="text-xs text-gray-500">
+            <div className={`text-sm ${
+              darkMode ? 'text-[var(--muted-mauve)]/70' : 'text-[var(--dusty-rose)]/70'
+            }`}>
               Supports .txt, .pdf, and .docx files
             </div>
           </div>
@@ -132,10 +161,13 @@ export default function FileUploader({ onTextExtracted, darkMode }: Props) {
       </div>
       
       {isProcessing && (
-        <div className="absolute inset-0 bg-black/50 rounded-xl flex items-center justify-center">
-          <div className="text-white flex items-center space-x-2">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-            <span>Processing file...</span>
+        <div className="absolute inset-0 backdrop-blur-sm bg-black/30 rounded-xl flex items-center justify-center">
+          <div className={`
+            ${darkMode ? 'glass-morphism-dark' : 'glass-morphism'}
+            text-[var(--raspberry-rose)] px-6 py-4 rounded-lg flex items-center space-x-3
+          `}>
+            <div className="animate-spin rounded-full h-5 w-5 border-2 border-current"></div>
+            <span className="font-medium">Processing file...</span>
           </div>
         </div>
       )}
