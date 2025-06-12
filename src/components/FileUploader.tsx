@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
+import { getDocument, GlobalWorkerOptions, version } from 'pdfjs-dist';
 
 interface Props {
   onTextExtracted: (text: string) => void;
@@ -8,6 +9,11 @@ interface Props {
 }
 
 export default function FileUploader({ onTextExtracted, darkMode }: Props) {
+  useEffect(() => {
+    // Configure PDF.js worker
+    GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/pdf.worker.js`;
+  }, []);
+
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -20,19 +26,23 @@ export default function FileUploader({ onTextExtracted, darkMode }: Props) {
       };
       reader.readAsText(file);
     } else if (extension === "pdf") {
-      const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf");
-      const typedFile = new Uint8Array(await file.arrayBuffer());
-      const pdf = await pdfjsLib.getDocument({ data: typedFile }).promise;
-      let fullText = "";
+      try {
+        const typedFile = new Uint8Array(await file.arrayBuffer());
+        const pdf = await getDocument({ data: typedFile }).promise;
+        let fullText = "";
 
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const content = await page.getTextContent();
-        const strings = content.items.map((item: any) => item.str);
-        fullText += strings.join(" ") + "\n";
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          const strings = content.items.map((item: any) => item.str);
+          fullText += strings.join(" ") + "\n";
+        }
+
+        onTextExtracted(fullText.trim());
+      } catch (error) {
+        console.error('Error processing PDF:', error);
+        alert('Error processing PDF file. Please try again.');
       }
-
-      onTextExtracted(fullText.trim());
     } else {
       alert("Only .txt and .pdf files are supported.");
     }
