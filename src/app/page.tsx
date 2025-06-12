@@ -6,9 +6,10 @@ import { translateText } from "../utils/translateApi";
 import { detectLanguage } from "../utils/languageDetect";
 import LiveTranslation from "../components/LiveTranslation";
 import { generatePDF } from "../utils/pdfGenerator";
+import AnimatedBackground from "../components/AnimatedBackground";
 import ImageUploader from "../components/ImageUploader";
 import FileUploader from "../components/FileUploader";
-import AnimatedBackground from "../components/AnimatedBackground";
+import { generateShareableLink, getTranslationParamsFromURL } from "../utils/shareUtils";
 
 const languages = [
   { code: "en", name: "English" },
@@ -43,6 +44,8 @@ export default function HomePage() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [shareUrl, setShareUrl] = useState<string>("");
+  const [showShareToast, setShowShareToast] = useState(false);
 
   useEffect(() => {
     const savedMode = localStorage.getItem("darkMode");
@@ -65,6 +68,16 @@ export default function HomePage() {
     detect();
   }, [text]);
 
+  useEffect(() => {
+    // Check for translation parameters in URL
+    const params = getTranslationParamsFromURL();
+    if (params.text) {
+      setText(params.text);
+      if (params.from) setSourceLang(params.from);
+      if (params.to) setTargetLang(params.to);
+    }
+  }, []);
+
   const toggleDarkMode = () => {
     document.documentElement.classList.toggle("dark");
     localStorage.setItem("darkMode", (!darkMode).toString());
@@ -83,6 +96,19 @@ export default function HomePage() {
     navigator.clipboard.writeText(translatedText).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  const handleShare = () => {
+    if (!text || !translatedText) return;
+    
+    const link = generateShareableLink(text, sourceLang, targetLang);
+    setShareUrl(link);
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(link).then(() => {
+      setShowShareToast(true);
+      setTimeout(() => setShowShareToast(false), 3000);
     });
   };
 
@@ -243,7 +269,21 @@ export default function HomePage() {
                     >
                       📥 Download PDF
                     </button>
+
+                    <button
+                      onClick={handleShare}
+                      className="flex-1 enhanced-button bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-blue-500 hover:to-indigo-500 text-white px-4 py-3 rounded-lg"
+                    >
+                      🔗 Share Translation
+                    </button>
                   </div>
+
+                  {/* Share Toast Notification */}
+                  {showShareToast && (
+                    <div className="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-fade-in-up">
+                      ✓ Share link copied to clipboard!
+                    </div>
+                  )}
                 </div>
               )}
             </div>
