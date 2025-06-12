@@ -1,22 +1,41 @@
 "use client";
 
-import React from 'react';
+import React, { useMemo, CSSProperties } from 'react';
+
+// Simple seeded random number generator
+function seededRandom(seed: number) {
+  const x = Math.sin(seed++) * 10000;
+  return x - Math.floor(x);
+}
+
+interface Star {
+  style: CSSProperties;
+}
+
+// Generate star positions and delays
+function generateStars(count: number): Star[] {
+  return Array.from({ length: count }, (_, i) => ({
+    style: {
+      left: `${seededRandom(i * 3) * 100}%`,
+      top: `${seededRandom(i * 3 + 1) * 100}%`,
+      animationDelay: `${seededRandom(i * 3 + 2) * 5}s`,
+    }
+  }));
+}
 
 export default function AnimatedBackground({ darkMode }: { darkMode: boolean }) {
+  const stars = useMemo(() => generateStars(100), []);
+
   return (
     <div className="fixed top-0 left-0 w-full h-full -z-10 overflow-hidden pointer-events-none">
       <div className={`absolute inset-0 ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
         {/* Animated stars/particles */}
         <div className="stars">
-          {[...Array(100)].map((_, i) => (
+          {stars.map((star, i) => (
             <div
               key={i}
               className="star"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 5}s`,
-              }}
+              style={star.style}
             />
           ))}
         </div>
