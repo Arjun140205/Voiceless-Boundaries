@@ -48,3 +48,28 @@ declare module 'vanta/dist/vanta.dots.min' {
 
   export default dots;
 }
+
+declare module 'vanta/dist/vanta.fog.min' {
+  interface VantaFogOptions {
+    el: HTMLElement | null;
+    THREE: any;
+    mouseControls: boolean;
+    touchControls: boolean;
+    gyroControls: boolean;
+    minHeight: number;
+    minWidth: number;
+    highlightColor: number;
+    midtoneColor: number;
+    lowlightColor: number;
+    baseColor: number;
+    blurFactor: number;
+    speed: number;
+    zoom: number;
+  }
+
+  function fog(options: VantaFogOptions): {
+    destroy: () => void;
+  };
+
+  export default fog;
+}
