@@ -9,14 +9,22 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.2.3",
+    "@shadcn/ui": "^0.0.4",
     "canvas": "2.11.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "jspdf": "^3.0.1",
+    "lucide-react": "^0.515.0",
     "mammoth": "^1.9.1",
     "next": "15.3.3",
     "pdfjs-dist": "3.11.174",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "tesseract.js": "^6.0.1"
+    "tailwind-merge": "^3.3.1",
+    "tesseract.js": "^6.0.1",
+    "three": "^0.135.0",
+    "vanta": "^0.5.24"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -25,6 +33,7 @@
     "@types/pdfjs-dist": "^2.10.377",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.177.0",
     "autoprefixer": "^10.4.21",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
