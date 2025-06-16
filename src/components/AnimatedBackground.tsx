@@ -15,7 +15,7 @@ export default function AnimatedBackground({ children, darkMode = false }: Props
   useEffect(() => {
     const loadVanta = async () => {
       if (!vantaEffect && vantaRef.current) {
-        const VANTA = (await import('vanta/dist/vanta.waves.min')).default;
+        const VANTA = (await import('vanta/dist/vanta.fog.min')).default;
         setVantaEffect(
           VANTA({
             el: vantaRef.current,
@@ -25,13 +25,13 @@ export default function AnimatedBackground({ children, darkMode = false }: Props
             gyroControls: false,
             minHeight: 200.00,
             minWidth: 200.00,
-            scale: 1.00,
-            scaleMobile: 1.00,
-            color: 0x0066ff,
-            shininess: 10.00,
-            waveHeight: 20.00,
-            waveSpeed: 0.75,
-            zoom: 0.65
+            highlightColor: 0xef5f5,
+            midtoneColor: 0xacff7,
+            lowlightColor: 0x37ffd3,
+            baseColor: 0x0,
+            blurFactor: 0.21,
+            speed: 4.40,
+            zoom: 1.80
           })
         );
       }
