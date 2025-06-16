@@ -84,17 +84,17 @@ export default function Translator() {
 
   return (
     <AnimatedBackground darkMode={false}>
-      <div className="min-h-screen relative backdrop-blur-[2px] bg-white/10 dark:bg-gray-900/10 p-6">
+      <div className="min-h-screen relative backdrop-blur-sm bg-black/5 p-6">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-5xl font-bold text-center text-blue-600 dark:text-blue-400 mb-8 drop-shadow-lg">
+          <h1 className="text-5xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-[#37ffd3] to-[#acff7] mb-8 drop-shadow-lg">
             Universal Translator
           </h1>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Source Section */}
-            <div className="backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-xl shadow-lg p-6 
-              transform transition-all duration-300 hover:shadow-xl border border-white/30
-              hover:bg-white/50 dark:hover:bg-gray-800/50">
+            <div className="backdrop-blur-md bg-white/20 dark:bg-black/20 rounded-xl shadow-lg p-6 
+              transform transition-all duration-300 hover:shadow-xl border border-[#37ffd3]/20
+              hover:bg-white/30 dark:hover:bg-black/30">
               <div className="mb-4">
                 <LanguageSelector
                   selected={sourceLang}
@@ -122,25 +122,25 @@ export default function Translator() {
               <div className="relative group">
                 <textarea
                   className="w-full h-48 p-4 rounded-lg
-                    bg-white/50 dark:bg-gray-700/50 text-gray-900 dark:text-white
+                    bg-white/30 dark:bg-black/30 text-gray-900 dark:text-white
                     placeholder-gray-500 dark:placeholder-gray-400 resize-none
-                    backdrop-blur-sm border border-white/20 dark:border-gray-700/50
-                    focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                    backdrop-blur-sm border border-[#37ffd3]/20
+                    focus:ring-2 focus:ring-[#37ffd3] focus:border-transparent
                     transition-all duration-200 ease-in-out
-                    group-hover:bg-white/70 dark:group-hover:bg-gray-700/70"
+                    group-hover:bg-white/40 dark:group-hover:bg-black/40"
                   placeholder="Enter text to translate, upload a file, or upload an image..."
                   value={inputText}
                   onChange={handleInputChange}
                 />
                 <div className="absolute bottom-2 right-2 flex items-center gap-2">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                  <span className="text-sm text-gray-600 dark:text-gray-300">
                     {charCount} characters
                   </span>
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => copyToClipboard(inputText)}
-                    className="text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400"
+                    className="text-gray-600 hover:text-[#37ffd3] dark:text-gray-300"
                     title="Copy to clipboard"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -151,7 +151,7 @@ export default function Translator() {
                     variant="ghost"
                     size="icon"
                     onClick={clearText}
-                    className="text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400"
+                    className="text-gray-600 hover:text-red-500 dark:text-gray-300"
                     title="Clear text"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -163,15 +163,16 @@ export default function Translator() {
             </div>
 
             {/* Target Section */}
-            <div className="backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-xl shadow-lg p-6 
-              transform transition-all duration-300 hover:shadow-xl border border-white/30
-              hover:bg-white/50 dark:hover:bg-gray-800/50">
+            <div className="backdrop-blur-md bg-white/20 dark:bg-black/20 rounded-xl shadow-lg p-6 
+              transform transition-all duration-300 hover:shadow-xl border border-[#37ffd3]/20
+              hover:bg-white/30 dark:hover:bg-black/30">
               <div className="mb-4 flex items-center gap-4">
                 <Button
                   onClick={swapLanguages}
                   variant="outline"
                   size="icon"
-                  className="rounded-full hover:scale-110 transition-transform duration-200"
+                  className="rounded-full hover:scale-110 transition-transform duration-200
+                    border-[#37ffd3]/20 hover:border-[#37ffd3]/40 hover:bg-[#37ffd3]/10"
                   aria-label="Swap languages"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -188,17 +189,17 @@ export default function Translator() {
               </div>
               <div className="relative h-[calc(100%-3.5rem)]">
                 <div className="w-full h-full p-4 rounded-lg
-                  backdrop-blur-sm bg-white/50 dark:bg-gray-700/50
-                  text-gray-900 dark:text-white overflow-auto
-                  border border-white/20 dark:border-gray-700/50
+                  bg-white/30 dark:bg-black/30 text-gray-900 dark:text-white
+                  backdrop-blur-sm border border-[#37ffd3]/20
                   transition-all duration-200 ease-in-out
-                  hover:bg-white/70 dark:hover:bg-gray-700/70">
+                  hover:bg-white/40 dark:hover:bg-black/40
+                  overflow-auto">
                   {isLoading ? (
                     <div className="flex items-center justify-center h-full">
                       <div className="relative w-16 h-16">
-                        <div className="absolute inset-0 rounded-full border-t-2 border-b-2 border-blue-500 animate-spin"></div>
-                        <div className="absolute inset-2 rounded-full border-r-2 border-l-2 border-purple-500 animate-spin animation-delay-150"></div>
-                        <div className="absolute inset-4 rounded-full border-t-2 border-b-2 border-blue-500 animate-spin animation-delay-300"></div>
+                        <div className="absolute inset-0 rounded-full border-t-2 border-b-2 border-[#37ffd3] animate-spin"></div>
+                        <div className="absolute inset-2 rounded-full border-r-2 border-l-2 border-[#acff7] animate-spin animation-delay-150"></div>
+                        <div className="absolute inset-4 rounded-full border-t-2 border-b-2 border-[#37ffd3] animate-spin animation-delay-300"></div>
                       </div>
                     </div>
                   ) : (
@@ -209,8 +210,7 @@ export default function Translator() {
                           variant="ghost"
                           size="icon"
                           onClick={() => copyToClipboard(outputText)}
-                          className="absolute bottom-2 right-2 text-gray-500 hover:text-blue-500 
-                            dark:text-gray-400 dark:hover:text-blue-400"
+                          className="absolute bottom-2 right-2 text-gray-600 hover:text-[#37ffd3] dark:text-gray-300"
                           title="Copy translation"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -230,8 +230,12 @@ export default function Translator() {
             <Button
               onClick={handleTranslate}
               disabled={isLoading || !inputText.trim()}
-              className="px-8 py-6 text-lg font-semibold hover:scale-105 bg-blue-600/90 hover:bg-blue-600
-                backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300"
+              className="px-8 py-6 text-lg font-semibold hover:scale-105
+                bg-gradient-to-r from-[#37ffd3] to-[#acff7]
+                text-black hover:text-black/80
+                shadow-[0_0_20px_rgba(55,255,211,0.3)]
+                hover:shadow-[0_0_30px_rgba(55,255,211,0.5)]
+                backdrop-blur-sm transition-all duration-300"
             >
               {isLoading ? 'Translating...' : 'Translate'}
             </Button>
