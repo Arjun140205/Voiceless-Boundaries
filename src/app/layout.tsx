@@ -11,22 +11,20 @@ export const metadata: Metadata = {
   description: "Universal Translation Platform",
 };
 
-export default function RootLayout({
-  children,
-}: {
+interface RootLayoutProps {
   children: React.ReactNode;
-}) {
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ThemeToggle />
-          {children}
+      <head />
+      <body className={`${inter.className} min-h-screen bg-background antialiased`}>
+        <ThemeProvider>
+          <main className="relative">
+            <ThemeToggle />
+            {children}
+          </main>
         </ThemeProvider>
       </body>
     </html>
