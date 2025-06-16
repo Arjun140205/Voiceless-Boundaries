@@ -132,11 +132,10 @@ export default function HomePage() {
   };
 
   return (
-    <>
-      <AnimatedBackground darkMode={darkMode} />
-      <main className="min-h-screen relative">
+    <AnimatedBackground darkMode={darkMode}>
+      <div className="relative min-h-screen">
         {/* Header Section */}
-        <div className={`sticky top-0 z-50 w-full ${darkMode ? 'glass-dark' : 'glass'} shadow-lg`}>
+        <div className={`sticky top-0 z-50 w-full backdrop-blur-sm bg-white/30 dark:bg-gray-900/30 shadow-lg`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-4">
@@ -146,18 +145,18 @@ export default function HomePage() {
               </div>
               <button
                 onClick={toggleDarkMode}
-                className="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500/10 to-purple-500/10 hover:from-purple-500/20 hover:to-blue-500/20 text-gray-800 dark:text-gray-200 transition-all duration-300 shadow-sm hover:shadow-md border border-gray-200/20 backdrop-blur-sm"
+                className="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-purple-500/30 hover:to-blue-500/30 text-gray-800 dark:text-gray-200 transition-all duration-300 shadow-sm hover:shadow-md border border-gray-200/20 backdrop-blur-sm"
               >
-                {darkMode ? "Light Mode " : "Dark Mode "}
+                {darkMode ? "Light Mode" : "Dark Mode"}
               </button>
             </div>
           </div>
         </div>
 
         {/* Main Content Section */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
           {/* Language Selection Bar */}
-          <div className={`p-4 rounded-xl shadow-lg ${darkMode ? 'glass-dark' : 'glass'} transition-all duration-300`}>
+          <div className="p-4 rounded-xl shadow-lg backdrop-blur-sm bg-white/30 dark:bg-gray-900/30 transition-all duration-300">
             <div className="flex items-center gap-4 flex-wrap sm:flex-nowrap">
               <LanguageSelector
                 selected={sourceLang}
@@ -184,13 +183,13 @@ export default function HomePage() {
 
           {/* Upload Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className={`p-6 rounded-xl ${darkMode ? 'glass-dark' : 'glass'} transition-all duration-300 hover:shadow-xl`}>
+            <div className="p-6 rounded-xl backdrop-blur-sm bg-white/30 dark:bg-gray-900/30 transition-all duration-300 hover:shadow-xl">
               <h3 className="text-lg font-semibold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
                 Image Upload
               </h3>
               <ImageUploader onTextExtracted={setText} darkMode={darkMode} />
             </div>
-            <div className={`p-6 rounded-xl ${darkMode ? 'glass-dark' : 'glass'} transition-all duration-300 hover:shadow-xl`}>
+            <div className="p-6 rounded-xl backdrop-blur-sm bg-white/30 dark:bg-gray-900/30 transition-all duration-300 hover:shadow-xl">
               <h3 className="text-lg font-semibold mb-4 bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">
                 Document Upload
               </h3>
@@ -289,7 +288,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-      </main>
-    </>
+      </div>
+    </AnimatedBackground>
   );
 }
