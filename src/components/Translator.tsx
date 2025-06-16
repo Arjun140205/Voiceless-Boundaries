@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import LanguageSelector from "../components/LanguageSelector";
 import FileUploader from "../components/FileUploader";
 import ImageUploader from "../components/ImageUploader";
+import AnimatedBackground from "../components/AnimatedBackground";
+import { Button } from "../components/ui/button";
 import { translateText } from "../utils/translateApi";
 
 const languages = [
@@ -81,142 +83,161 @@ export default function Translator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-center text-gray-800 dark:text-white mb-8">
-          Universal Translator
-        </h1>
+    <AnimatedBackground darkMode={false}>
+      <div className="min-h-screen relative backdrop-blur-[2px] bg-white/10 dark:bg-gray-900/10 p-6">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-5xl font-bold text-center text-blue-600 dark:text-blue-400 mb-8 drop-shadow-lg">
+            Universal Translator
+          </h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Source Section */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 transform transition-all duration-300 hover:shadow-xl">
-            <div className="mb-4">
-              <LanguageSelector
-                selected={sourceLang}
-                onChange={setSourceLang}
-                languages={languages}
-              />
-            </div>
-
-            {/* File and Image Uploaders */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div className="w-full">
-                <FileUploader
-                  onTextExtracted={handleFileText}
-                  darkMode={false}
-                />
-              </div>
-              <div className="w-full">
-                <ImageUploader
-                  onTextExtracted={handleFileText}
-                  darkMode={false}
-                />
-              </div>
-            </div>
-
-            <div className="relative">
-              <textarea
-                className="w-full h-48 p-4 border border-gray-200 dark:border-gray-600 rounded-lg
-                  focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                  bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white
-                  placeholder-gray-400 dark:placeholder-gray-500 resize-none
-                  transition duration-200 ease-in-out"
-                placeholder="Enter text to translate, upload a file, or upload an image..."
-                value={inputText}
-                onChange={handleInputChange}
-              />
-              <div className="absolute bottom-2 right-2 flex items-center gap-2">
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  {charCount} characters
-                </span>
-                <button
-                  onClick={() => copyToClipboard(inputText)}
-                  className="p-2 text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400"
-                  title="Copy to clipboard"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                  </svg>
-                </button>
-                <button
-                  onClick={clearText}
-                  className="p-2 text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400"
-                  title="Clear text"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Target Section */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 transform transition-all duration-300 hover:shadow-xl">
-            <div className="mb-4 flex items-center gap-4">
-              <button
-                onClick={swapLanguages}
-                className="p-2 rounded-full bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800 
-                  transition-colors duration-200"
-                aria-label="Swap languages"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                </svg>
-              </button>
-              <div className="flex-1">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Source Section */}
+            <div className="backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-xl shadow-lg p-6 
+              transform transition-all duration-300 hover:shadow-xl border border-white/30
+              hover:bg-white/50 dark:hover:bg-gray-800/50">
+              <div className="mb-4">
                 <LanguageSelector
-                  selected={targetLang}
-                  onChange={setTargetLang}
+                  selected={sourceLang}
+                  onChange={setSourceLang}
                   languages={languages}
                 />
               </div>
+              
+              {/* File and Image Uploaders */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="w-full">
+                  <FileUploader
+                    onTextExtracted={handleFileText}
+                    darkMode={false}
+                  />
+                </div>
+                <div className="w-full">
+                  <ImageUploader
+                    onTextExtracted={handleFileText}
+                    darkMode={false}
+                  />
+                </div>
+              </div>
+
+              <div className="relative group">
+                <textarea
+                  className="w-full h-48 p-4 rounded-lg
+                    bg-white/50 dark:bg-gray-700/50 text-gray-900 dark:text-white
+                    placeholder-gray-500 dark:placeholder-gray-400 resize-none
+                    backdrop-blur-sm border border-white/20 dark:border-gray-700/50
+                    focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                    transition-all duration-200 ease-in-out
+                    group-hover:bg-white/70 dark:group-hover:bg-gray-700/70"
+                  placeholder="Enter text to translate, upload a file, or upload an image..."
+                  value={inputText}
+                  onChange={handleInputChange}
+                />
+                <div className="absolute bottom-2 right-2 flex items-center gap-2">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {charCount} characters
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => copyToClipboard(inputText)}
+                    className="text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400"
+                    title="Copy to clipboard"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={clearText}
+                    className="text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400"
+                    title="Clear text"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </Button>
+                </div>
+              </div>
             </div>
-            <div className="relative h-[calc(100%-3.5rem)]">
-              <div className="w-full h-full p-4 border border-gray-200 dark:border-gray-600 rounded-lg
-                bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white
-                overflow-auto">
-                {isLoading ? (
-                  <div className="flex items-center justify-center h-full">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                  </div>
-                ) : (
-                  <div className="h-full relative">
-                    {outputText || "Translation will appear here..."}
-                    {outputText && (
-                      <button
-                        onClick={() => copyToClipboard(outputText)}
-                        className="absolute bottom-2 right-2 p-2 text-gray-500 hover:text-blue-500 
-                          dark:text-gray-400 dark:hover:text-blue-400"
-                        title="Copy translation"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-                      </button>
-                    )}
-                  </div>
-                )}
+
+            {/* Target Section */}
+            <div className="backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-xl shadow-lg p-6 
+              transform transition-all duration-300 hover:shadow-xl border border-white/30
+              hover:bg-white/50 dark:hover:bg-gray-800/50">
+              <div className="mb-4 flex items-center gap-4">
+                <Button
+                  onClick={swapLanguages}
+                  variant="outline"
+                  size="icon"
+                  className="rounded-full hover:scale-110 transition-transform duration-200"
+                  aria-label="Swap languages"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                  </svg>
+                </Button>
+                <div className="flex-1">
+                  <LanguageSelector
+                    selected={targetLang}
+                    onChange={setTargetLang}
+                    languages={languages}
+                  />
+                </div>
+              </div>
+              <div className="relative h-[calc(100%-3.5rem)]">
+                <div className="w-full h-full p-4 rounded-lg
+                  backdrop-blur-sm bg-white/50 dark:bg-gray-700/50
+                  text-gray-900 dark:text-white overflow-auto
+                  border border-white/20 dark:border-gray-700/50
+                  transition-all duration-200 ease-in-out
+                  hover:bg-white/70 dark:hover:bg-gray-700/70">
+                  {isLoading ? (
+                    <div className="flex items-center justify-center h-full">
+                      <div className="relative w-16 h-16">
+                        <div className="absolute inset-0 rounded-full border-t-2 border-b-2 border-blue-500 animate-spin"></div>
+                        <div className="absolute inset-2 rounded-full border-r-2 border-l-2 border-purple-500 animate-spin animation-delay-150"></div>
+                        <div className="absolute inset-4 rounded-full border-t-2 border-b-2 border-blue-500 animate-spin animation-delay-300"></div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="h-full relative">
+                      {outputText || "Translation will appear here..."}
+                      {outputText && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => copyToClipboard(outputText)}
+                          className="absolute bottom-2 right-2 text-gray-500 hover:text-blue-500 
+                            dark:text-gray-400 dark:hover:text-blue-400"
+                          title="Copy translation"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          </svg>
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Translate Button */}
-        <div className="flex justify-center mt-8">
-          <button
-            className="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700
-              text-white font-medium rounded-lg shadow-lg
-              transform transition duration-200 ease-in-out hover:scale-105 hover:shadow-xl
-              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-              disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={handleTranslate}
-            disabled={isLoading || !inputText.trim()}
-          >
-            {isLoading ? 'Translating...' : 'Translate'}
-          </button>
+          {/* Translate Button */}
+          <div className="flex justify-center mt-8">
+            <Button
+              onClick={handleTranslate}
+              disabled={isLoading || !inputText.trim()}
+              className="px-8 py-6 text-lg font-semibold hover:scale-105 bg-blue-600/90 hover:bg-blue-600
+                backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              {isLoading ? 'Translating...' : 'Translate'}
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </AnimatedBackground>
   );
 }
