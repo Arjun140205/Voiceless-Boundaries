@@ -148,7 +148,7 @@ export default function HomePage() {
                 onClick={toggleDarkMode}
                 className="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500/10 to-purple-500/10 hover:from-purple-500/20 hover:to-blue-500/20 text-gray-800 dark:text-gray-200 transition-all duration-300 shadow-sm hover:shadow-md border border-gray-200/20 backdrop-blur-sm"
               >
-                {darkMode ? "Light Mode 🌞" : "Dark Mode 🌙"}
+                {darkMode ? "Light Mode " : "Dark Mode "}
               </button>
             </div>
           </div>
