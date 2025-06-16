@@ -3,20 +3,19 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
+type VantaEffect = {
+  destroy: () => void;
+} & Record<string, any>;
+
 interface Props {
   children: React.ReactNode;
   darkMode?: boolean;
 }
 
-type VantaEffect = {
-  destroy: () => void;
-} & Record<string, any>;
-
 export default function AnimatedBackground({ children, darkMode = false }: Props) {
   const vantaRef = useRef<HTMLDivElement>(null);
   const [vantaEffect, setVantaEffect] = useState<VantaEffect | null>(null);
 
-  // Initialize Vanta effect
   useEffect(() => {
     let mounted = true;
 
@@ -64,7 +63,6 @@ export default function AnimatedBackground({ children, darkMode = false }: Props
     };
   }, []);
 
-  // Handle dark mode changes
   useEffect(() => {
     if (vantaEffect) {
       try {
@@ -78,12 +76,15 @@ export default function AnimatedBackground({ children, darkMode = false }: Props
   }, [darkMode, vantaEffect]);
 
   return (
-    <div
-      ref={vantaRef}
-      className="fixed inset-0 -z-10 w-full min-h-screen"
-      aria-hidden="true"
-    >
-      <div className="relative z-0">{children}</div>
-    </div>
+    <>
+      <div
+        ref={vantaRef}
+        className="fixed inset-0 w-full min-h-screen -z-10"
+        aria-hidden="true"
+      />
+      <div className="relative z-0">
+        {children}
+      </div>
+    </>
   );
 }
