@@ -55,18 +55,45 @@ export default function HomePage() {
     }
   }, []);
 
+  // Language detection effect
   useEffect(() => {
+    let mounted = true;
+    let timeoutId: NodeJS.Timeout;
+
     const detect = async () => {
-      if (text.trim().length < 3) return;
-      setDetecting(true);
-      const detected = await detectLanguage(text);
-      if (detected && detected !== sourceLang) {
-        setSourceLang(detected);
+      const trimmedText = text?.trim() || '';
+      
+      // Don't detect if text is too short or empty
+      if (trimmedText.length < 3) {
+        if (mounted) setDetecting(false);
+        return;
       }
-      setDetecting(false);
+      
+      if (mounted) setDetecting(true);
+      
+      try {
+        const detected = await detectLanguage(trimmedText);
+        if (mounted && detected && detected !== sourceLang) {
+          setSourceLang(detected);
+        }
+      } catch (error) {
+        console.error('Language detection failed:', error);
+      } finally {
+        if (mounted) {
+          setDetecting(false);
+        }
+      }
     };
-    detect();
-  }, [text]);
+
+    // Debounce the detection
+    timeoutId = setTimeout(detect, 1000);
+    
+    // Cleanup function
+    return () => {
+      mounted = false;
+      clearTimeout(timeoutId);
+    };
+  }, [text, sourceLang]); // Keep both dependencies to ensure proper updates
 
   useEffect(() => {
     // Check for translation parameters in URL
