@@ -1,43 +1,132 @@
 // utils/languageDetect.ts
 
+// Debounce function that returns a promise
+function debounce<T extends (...args: any[]) => Promise<any>>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => Promise<ReturnType<T>> {
+  let timeout: NodeJS.Timeout | null = null;
+  return (...args: Parameters<T>) => {
+    return new Promise((resolve) => {
+      if (timeout) clearTimeout(timeout);
+      timeout = setTimeout(async () => {
+        const result = await func(...args);
+        resolve(result);
+      }, wait);
+    });
+  };
+}
+
+// Common English words to check first before making API calls
+const commonEnglishWords = new Set([
+  'the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have', 'i',
+  'it', 'for', 'not', 'on', 'with', 'he', 'as', 'you', 'do', 'at',
+  // Add more common words as needed
+]);
+
+// Cache for detected languages to avoid repeated API calls
+const languageCache = new Map<string, string>();
+
 export async function detectLanguage(text: string): Promise<string | null> {
-  if (!text || text.trim().length < 3) {
-    return null;
-  }
-
   try {
-    // First try to detect by character set as it's more reliable
-    const charsetResult = detectByCharset(text);
-    if (charsetResult) {
-      return charsetResult;
+    // Early return conditions
+    if (!text) return null;
+    const trimmedText = text.trim();
+    if (trimmedText.length < 3) return null;
+
+    // Check cache first
+    const cacheKey = trimmedText.slice(0, 50); // Limit cache key length
+    if (languageCache.has(cacheKey)) {
+      return languageCache.get(cacheKey) || null;
     }
 
-    // If no specific charset detected, try to detect if it's English using Free Dictionary API
-    const isEnglish = await checkIfEnglish(text.split(/\s+/)[0]);
-    if (isEnglish) {
-      return 'en';
-    }
+    // Split text into words and prepare for analysis
+    const words = trimmedText
+      .split(/\s+/)
+      .filter(word => {
+        // Filter out words that we know won't be in the dictionary
+        if (word.length < 3) return false;
+        if (/^[A-Z]/.test(word)) return false; // Skip proper nouns
+        if (/[0-9!@#$%^&*(),.?":{}|<>]/.test(word)) return false;
+        return true;
+      })
+      .slice(0, 5); // Check up to 5 words
 
-    // If not English and no specific charset detected, use browser's language
-    const browserLang = navigator.language.split('-')[0];
-    return browserLang;
+    if (words.length === 0) return null;
 
+    // Check words in parallel to speed up the process
+    const results = await Promise.all(
+      words.map(word => checkIfEnglish(word))
+    );
+
+    const englishWordCount = results.filter(Boolean).length;
+    const result = englishWordCount >= Math.ceil(words.length / 3) ? 'en' : null;
+
+    // Cache the result
+    languageCache.set(cacheKey, result || '');
+    
+    return result;
   } catch (error) {
-    console.warn('Language detection warning:', error);
-    return detectByCharset(text) || 'en'; // Fallback to charset detection or English
+    console.error('Language detection error:', error);
+    return null;
   }
 }
 
+// Cache API responses
+const apiCache = new Map<string, boolean>();
+
 async function checkIfEnglish(word: string): Promise<boolean> {
+  const originalWord = word.trim();
+  const normalizedWord = originalWord.toLowerCase();
+  
+  // If the word is empty or just whitespace
+  if (!normalizedWord) return false;
+  
+  // If it's a common English word, return true immediately
+  if (commonEnglishWords.has(normalizedWord)) return true;
+  
+  // Check cache first
+  if (apiCache.has(normalizedWord)) {
+    return apiCache.get(normalizedWord) || false;
+  }
+  
+  // Skip API call for:
+  // 1. Words with numbers or special characters
+  if (/[0-9!@#$%^&*(),.?":{}|<>]/.test(normalizedWord)) return false;
+  
+  // 2. Words that are too short
+  if (normalizedWord.length < 3) return false;
+  
+  // 3. Words that start with a capital letter (likely proper nouns)
+  if (/^[A-Z]/.test(originalWord)) {
+    apiCache.set(normalizedWord, false);
+    return false;
+  }
+  
+  // 4. Skip if word looks like a code snippet or technical term
+  if (/^[_$]|[A-Z]{2,}/.test(originalWord)) {
+    apiCache.set(normalizedWord, false);
+    return false;
+  }
+
   try {
-    // Use Free Dictionary API to check if the word exists in English
-    const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word.toLowerCase())}`);
-    return response.ok;
+    const response = await fetch(
+      `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(normalizedWord)}`
+    );
+    const result = response.ok;
+    apiCache.set(normalizedWord, result);
+    return result;
   } catch (error) {
     console.warn('Dictionary API check failed:', error);
     return false;
   }
 }
+
+// Create a debounced version of checkIfEnglish
+const debouncedCheckIfEnglish = debounce(checkIfEnglish, 500);
+
+// Export the debounced version
+export { debouncedCheckIfEnglish as checkIfEnglish };
 
 function detectByCharset(text: string): string | null {
   // Remove spaces, punctuation, and numbers
